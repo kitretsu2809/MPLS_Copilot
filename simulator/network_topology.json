@@ -1,0 +1,14 @@
+{
+  "routers": [
+    {"id": "R1", "type": "core", "location": "Delhi"},
+    {"id": "R2", "type": "core", "location": "Mumbai"},
+    {"id": "R3", "type": "edge", "location": "Bangalore"},
+    {"id": "R4", "type": "edge", "location": "Chennai"}
+  ],
+  "links": [
+    {"source": "R1", "target": "R2", "capacity_gbps": 10},
+    {"source": "R2", "target": "R3", "capacity_gbps": 1},
+    {"source": "R3", "target": "R4", "capacity_gbps": 1},
+    {"source": "R4", "target": "R1", "capacity_gbps": 10}
+  ]
+}
