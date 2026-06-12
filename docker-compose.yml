@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      # Mount your local Ollama models so it doesn't need to re-download gpu-agent:latest
+      - ~/.ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8001:8000" # Expose to host on 8001 to match frontend fetch and avoid 8000 conflicts
+    volumes:
+      - ./simulator:/app/simulator
+    environment:
+      # Point to the new dockerized ollama container
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # Define the LLM to use here!
+      - OLLAMA_MODEL=gpu-agent:latest
+    depends_on:
+      - simulator
+      - ollama
+
+  simulator:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ["python", "-m", "simulator.generate_telemetry"]
+    volumes:
+      - ./simulator:/app/simulator
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
