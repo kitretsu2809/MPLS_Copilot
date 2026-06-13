@@ -22,7 +22,9 @@ export default function CopilotChat({ onNewToolEvents }: { onNewToolEvents?: (ev
 
   React.useEffect(() => {
     if (messages.length > 1) {
-      localStorage.setItem("copilot_chat_messages", JSON.stringify(messages));
+      // Cap at 50 messages to prevent localStorage overflow (5MB limit)
+      const recentMessages = messages.slice(-50);
+      localStorage.setItem("copilot_chat_messages", JSON.stringify(recentMessages));
     }
   }, [messages]);
 

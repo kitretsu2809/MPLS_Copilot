@@ -16,7 +16,9 @@ export default function Home() {
 
   useEffect(() => {
     if (toolEvents.length > 0) {
-      localStorage.setItem("copilot_tool_events", JSON.stringify(toolEvents));
+      // Cap at 100 events to prevent localStorage overflow
+      const recentEvents = toolEvents.slice(-100);
+      localStorage.setItem("copilot_tool_events", JSON.stringify(recentEvents));
     }
   }, [toolEvents]);
 
