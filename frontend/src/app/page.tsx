@@ -1,11 +1,24 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TelemetryDashboard from "@/components/TelemetryDashboard";
 import CopilotChat from "@/components/CopilotChat";
 import ToolLogPanel, { ToolEvent } from "@/components/ToolLogPanel";
 
 export default function Home() {
   const [toolEvents, setToolEvents] = useState<ToolEvent[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("copilot_tool_events");
+    if (saved) {
+      try { setToolEvents(JSON.parse(saved)); } catch (e) {}
+    }
+  }, []);
+
+  useEffect(() => {
+    if (toolEvents.length > 0) {
+      localStorage.setItem("copilot_tool_events", JSON.stringify(toolEvents));
+    }
+  }, [toolEvents]);
 
   return (
     <main className="min-h-screen p-8 max-w-7xl mx-auto flex flex-col gap-8">

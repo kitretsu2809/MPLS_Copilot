@@ -11,6 +11,22 @@ export default function CopilotChat({ onNewToolEvents }: { onNewToolEvents?: (ev
   const [loading, setLoading] = useState(false);
 
   React.useEffect(() => {
+    const saved = localStorage.getItem("copilot_chat_messages");
+    if (saved) {
+      try { 
+        const parsed = JSON.parse(saved);
+        if (parsed.length > 0) setMessages(parsed);
+      } catch (e) {}
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (messages.length > 1) {
+      localStorage.setItem("copilot_chat_messages", JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  React.useEffect(() => {
     const ws = new WebSocket('ws://localhost:8001/api/ws');
     
     ws.onmessage = (event) => {
